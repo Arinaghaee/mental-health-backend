@@ -23,7 +23,7 @@ import { Message } from './messages/entities/message.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
+        type: 'mssql',
         host: configService.get<string>('DB_HOST'),
         port: configService.get<number>('DB_PORT'),
         username: configService.get<string>('DB_USERNAME'),
@@ -32,6 +32,9 @@ import { Message } from './messages/entities/message.entity';
         entities: [User, Conversation, Message],
         synchronize: true, // Set to false in production
         logging: configService.get<string>('NODE_ENV') === 'development',
+        options:{
+          encrypt: false,  // for local SQL server basically false
+        },
       }),
       inject: [ConfigService],
     }),
