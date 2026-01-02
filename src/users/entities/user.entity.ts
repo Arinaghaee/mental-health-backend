@@ -24,8 +24,8 @@ export class User {
   recovery_key_hash: string;
 
   @Column({
-    type: 'enum',
-    enum: UserRole,
+    type: 'varchar',
+    length:30,
     default: UserRole.STUDENT,
   })
   role: UserRole;

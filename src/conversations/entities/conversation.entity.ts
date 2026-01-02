@@ -28,21 +28,21 @@ export class Conversation {
   is_anonymous: boolean;
 
   @Column({
-    type: 'enum',
-    enum: ConversationCategory,
+    type: 'varchar',
+    length:30,
   })
   category: ConversationCategory;
 
   @Column({
-    type: 'enum',
-    enum: ConversationUrgency,
+    type: 'varchar',
+    length:30,
     default: ConversationUrgency.MEDIUM,
   })
   urgency: ConversationUrgency;
 
   @Column({
-    type: 'enum',
-    enum: ConversationStatus,
+    type: 'varchar',
+    length:30,
     default: ConversationStatus.NEW,
   })
   status: ConversationStatus;

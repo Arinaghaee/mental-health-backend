@@ -21,8 +21,8 @@ export class Message {
   sender_id: string;
 
   @Column({
-    type: 'enum',
-    enum: SenderType,
+    type: 'varchar',
+    length:30,
   })
   sender_type: SenderType;
 
