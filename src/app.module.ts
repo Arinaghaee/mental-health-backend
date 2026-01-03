@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +20,11 @@ import { Message } from './messages/entities/message.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    ThrottlerModule.forRoot([{
+      ttl: 60000, // time : 60 sec
+      limit: 10, // limit : each ip only can request 10 times each 60 sec
+    }]),
 
     // TypeORM Database Configuration
     TypeOrmModule.forRootAsync({
@@ -48,6 +55,11 @@ import { Message } from './messages/entities/message.entity';
     MessagesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
