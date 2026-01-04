@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -24,9 +25,11 @@ export class AuthController {
   /**
    * Register a new user
    * POST /auth/register
+   * Rate limit: 3 requests per 60 seconds to prevent spam registrations
    */
   @Post('register')
-  @ApiOperation({ 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @ApiOperation({
     summary: 'Register a new user',
     description: 'Creates a new user account and returns a JWT token along with a recovery file for account recovery'
   })
@@ -73,10 +76,12 @@ export class AuthController {
   /**
    * Login user
    * POST /auth/login
+   * Rate limit: 5 requests per 60 seconds to prevent brute force attacks
    */
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Login user',
     description: 'Authenticates a user and returns a JWT token'
   })
@@ -110,10 +115,12 @@ export class AuthController {
   /**
    * Recover account using recovery file
    * POST /auth/recover
+   * Rate limit: 3 requests per 60 seconds to prevent abuse
    */
   @Post('recover')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Recover account',
     description: 'Recovers an account using the recovery file and sets a new password'
   })

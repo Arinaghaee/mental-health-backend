@@ -21,9 +21,11 @@ import { Message } from './messages/entities/message.entity';
       envFilePath: '.env',
     }),
 
+    // Rate Limiting Configuration (Protection against DDoS and brute-force attacks)
     ThrottlerModule.forRoot([{
-      ttl: 60000, // time : 60 sec
-      limit: 10, // limit : each ip only can request 10 times each 60 sec
+      name: 'default',
+      ttl: 60000, // Time window: 60 seconds (in milliseconds)
+      limit: 10, // Max requests: 10 requests per IP per 60 seconds
     }]),
 
     // TypeORM Database Configuration
