@@ -1,19 +1,14 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Controller, Get, Delete, Param, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { User } from './entities/user.entity';
 import { UserRole } from '../common/enums/role.enum';
+import { UsersService } from './users.service';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   /**
    * Get all counselors (for assignment purposes)
@@ -22,11 +17,7 @@ export class UsersController {
   @Get('counselors')
   @Roles(UserRole.ADMIN, UserRole.COUNSELOR)
   async getCounselors() {
-    const counselors = await this.userRepository.find({
-      where: { role: UserRole.COUNSELOR, is_active: true },
-      select: ['user_id', 'username', 'role', 'created_at'],
-      order: { username: 'ASC' },
-    });
+    const counselors = await this.usersService.getCounselors();
 
     return {
       message: 'Counselors retrieved successfully',
@@ -41,16 +32,22 @@ export class UsersController {
   @Get()
   @Roles(UserRole.ADMIN)
   async getAllUsers() {
-    const users = await this.userRepository.find({
-      where: { is_active: true },
-      select: ['user_id', 'username', 'role', 'created_at'],
-      order: { created_at: 'DESC' },
-    });
+    const users = await this.usersService.getAllUsers();
 
     return {
       message: 'Users retrieved successfully',
       users,
       count: users.length,
     };
+  }
+
+  /**
+   * Delete a user and all associated data (admin only)
+   * @param id - The user ID to delete
+   */
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  async deleteUser(@Param('id') id: string) {
+    return await this.usersService.deleteUser(id);
   }
 }
