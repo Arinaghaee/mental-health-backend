@@ -32,18 +32,19 @@ import { Message } from './messages/entities/message.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'mssql',
+        //type: 'mssql',
+        type: 'mysql',
         host: configService.get<string>('DB_HOST'),
         port: Number(configService.get('DB_PORT')),
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         entities: [User, Conversation, Message],
-        synchronize: false, // Set to false in production
+        synchronize: true, // previously, Set to false in production
         logging: configService.get<string>('NODE_ENV') === 'development',
         options:{
-          encrypt: true,  // Enforces TLS encryption for data in transit
-          trustServerCertificate: true // Certificate validation is disabled for development/demo environment due to self-signed cert (no CA-signed cert)
+          // encrypt: true,  // Enforces TLS encryption for data in transit
+          // trustServerCertificate: true // Certificate validation is disabled for development/demo environment due to self-signed cert (no CA-signed cert)
                                        // In production, this should be set to false and use a valid TLS certificate to prevent MITM attacks.
         },
       }),
