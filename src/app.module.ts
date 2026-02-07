@@ -42,11 +42,11 @@ import { Message } from './messages/entities/message.entity';
         entities: [User, Conversation, Message],
         synchronize: true, // previously, Set to false in production
         logging: configService.get<string>('NODE_ENV') === 'development',
-        options:{
+        // options:{
           // encrypt: true,  // Enforces TLS encryption for data in transit
           // trustServerCertificate: true // Certificate validation is disabled for development/demo environment due to self-signed cert (no CA-signed cert)
                                        // In production, this should be set to false and use a valid TLS certificate to prevent MITM attacks.
-        },
+        //},
       }),
       inject: [ConfigService],
     }),
